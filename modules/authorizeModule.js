@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken')
 
-exports.AuthorizeUser = async (req,res,next) => {
+exports.isAuthorized = async (req,res,next) => {
     // Check whether token exists
     if(!req.headers['token']) return res.status(401).send({msg : "Unauthorised : Token didn't exist"});
     
@@ -13,11 +13,4 @@ exports.AuthorizeUser = async (req,res,next) => {
     } catch(err) {
         res.send(err);
     }
-}
-
-exports.isAdmin = async (req,res,next) => {
-    if(req.body.user.existUser.role == "Admin")
-        next()
-    else
-        res.status(403).send({msg: "You are not Admin"})
 }
