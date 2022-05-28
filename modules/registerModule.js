@@ -39,20 +39,24 @@ exports.login = async (req,res,next) => {
         password: Joi.string().min(8).max(10).required()
     })
     var {error} = await schema.validate(req.body);
-    if (error) return res.status(400).send({msg : error.details[0].message});
+    if (error) return res.status(400).send({error : error.details[0].message});
 
     // Is registerd User
     var existUser = await User.findOne({"email": req.body.email}).exec();
-    if(!existUser) return res.status(400).send({msg : "Email not registered"})
+    if(!existUser) return res.status(400).send({error : "Email not registered"})
     var user = {};
     user.name = existUser.name;
     user.email = existUser.email;
 
     // Password compare check
     const isValid = await bcrypt.compare(req.body.password, existUser.password);
-    if(!isValid) return res.status(400).send({msg: "Password doesn't match"});
+    if(!isValid) return res.status(400).json({success: false, error: 'Invalid Credentials'});
 
     // Generate Token
     var token = jwt.sign({user}, 'SWERA', {expiresIn: '1h'})
-    res.send(token);
+    res.status(200).json({
+        success: true,
+        message: "Login success",
+        token
+    });
 }

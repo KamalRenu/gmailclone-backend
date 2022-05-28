@@ -1,16 +1,30 @@
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const User = require('../model/User')
 
 exports.isAuthorized = async (req,res,next) => {
-    // Check whether token exists
-    if(!req.headers['token']) return res.status(401).send({msg : "Unauthorised : Token didn't exist"});
-    
-    // Verify Token
-    try {
-        const decodedToken = await jwt.verify(req.headers['token'], "SWERA");
-        console.log(decodedToken);
-        req.body.user = decodedToken;
+    try{
+        let token;
+
+        if(req.headers.authorization && req.headers.authorization.startsWith("Bearer")){
+            token = req.headers.authorization.split(' ')[1];
+        }
+
+        if(!token){
+            return res.status(401).json({
+                success : false,
+                error : "Invalid Token"
+            })
+        }
+
+        const verified = jwt.verify(token, "SWERA");
+        const user = User.findOne({email : verified.email})
+        req.user = user;
         next();
-    } catch(err) {
-        res.send(err);
+    }
+    catch(error){
+        return res.status(401).json({
+            success : false,
+            error : "Not authorized for this route"
+        })
     }
 }
