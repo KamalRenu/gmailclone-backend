@@ -6,13 +6,6 @@ const userRouter = require("./routes/users");
 const mailRouter = require("./routes/mailbox");
 PORT = process.env.PORT || 3001;
 
-const app = express();
-app.use(express.json())
-app.use(cors());
-
-app.use("/api/user", userRouter);
-app.use("/api/mailer", mailRouter);
-
 const url = process.env.MONGO_URI;
 mongoose.connect(url).then(()=>{
     app.listen(PORT, ()=>{
@@ -21,3 +14,10 @@ mongoose.connect(url).then(()=>{
 }).catch((error)=>{
     console.log(error)
 })
+
+const app = express();
+app.use(express.json())
+app.use(cors());
+
+app.use("/api/user", userRouter);
+app.use("/api/mailer", mailRouter);
