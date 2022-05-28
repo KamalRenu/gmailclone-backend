@@ -6,9 +6,9 @@ const userRouter = require("./routes/users");
 const mailRouter = require("./routes/mailbox");
 PORT = process.env.PORT || 3001;
 
+app.use(cors());
 const app = express();
 app.use(express.json())
-app.use(cors());
 
 app.use("/api/user", userRouter);
 app.use("/api/mailer", mailRouter);
